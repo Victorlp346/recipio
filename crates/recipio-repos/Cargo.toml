@@ -1,0 +1,15 @@
+[package]
+name = "recipio-repos"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+recipio-core = { workspace = true }
+
+async-trait = { workspace = true }
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "uuid"] }
+tokio = { workspace = true, features = ["full"] }
+uuid = { workspace = true }
+
+[lints]
+workspace = true

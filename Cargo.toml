@@ -1,0 +1,29 @@
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.dependencies]
+recipio-core = { path = "./crates/recipio-core" }
+async-trait = { version = "0.1" }
+snafu = { version = "0.9" }
+sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid"] }
+tokio = { version = "1.52", features = ["full"] }
+uuid = { version = "1.23", features = ["v4", "v7"] }
+
+[workspace.lints.rustdoc]
+all = { level = "warn" }
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -2 }
+pedantic = { level = "warn", priority = -2 }
+nursery = { level = "warn", priority = -2 }
+complexity = { level = "warn", priority = -2 }
+perf = { level = "warn", priority = -2 }
+style = { level = "warn", priority = -2 }
+suspicious = { level = "warn", priority = -2 }
+must_use_candidate = "allow"
+missing_const_for_fn = "allow"

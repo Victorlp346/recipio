@@ -1,0 +1,12 @@
+[package]
+name = "recipio-core"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+async-trait = { workspace = true }
+snafu = { workspace = true }
+uuid = { workspace = true, features = ["v4", "v7"] }
+
+[lints]
+workspace = true
