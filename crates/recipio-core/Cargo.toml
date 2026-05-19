@@ -6,7 +6,9 @@ edition.workspace = true
 [dependencies]
 async-trait = { workspace = true }
 bon = { workspace = true }
+derive_more = { workspace = true, features = ["full"] }
 snafu = { workspace = true }
+thiserror = { workspace = true }
 uuid = { workspace = true, features = ["v4", "v7"] }
 
 [lints]
