@@ -9,6 +9,7 @@ edition = "2024"
 [workspace.dependencies]
 recipio-core = { path = "./crates/recipio-core" }
 async-trait = { version = "0.1" }
+bon = { version = "3.9" }
 snafu = { version = "0.9" }
 sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid"] }
 tokio = { version = "1.52", features = ["full"] }

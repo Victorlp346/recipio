@@ -1,6 +1,7 @@
 use crate::{RecipioError, units::MeasurementCategory};
 
 use async_trait::async_trait;
+use bon::bon;
 use uuid::Uuid;
 
 #[derive(Clone, PartialEq, Eq, Debug)]
@@ -11,13 +12,27 @@ pub struct Ingredient {
     measure_category: MeasurementCategory,
 }
 
+#[bon]
 impl Ingredient {
-    pub fn builder(name: String, measure_category: MeasurementCategory) -> IngredientBuilder {
-        IngredientBuilder {
+    #[builder(on(String, into))]
+    pub fn new(
+        id: Option<Uuid>,
+        name: String,
+        display_name: Option<String>,
+        measure_category: MeasurementCategory,
+    ) -> Self {
+        let id = id.unwrap_or_else(Uuid::now_v7);
+
+        let display_name = match display_name {
+            None => name.clone(),
+            Some(d_name) => d_name,
+        };
+
+        Ingredient {
+            id,
             name,
+            display_name,
             measure_category,
-            id: None,
-            display_name: None,
         }
     }
 
@@ -46,51 +61,45 @@ pub trait IngredientRepository {
     ) -> Result<(), RecipioError>;
 }
 
-#[derive(Default)]
-pub struct IngredientBuilder {
-    name: String,
-    measure_category: MeasurementCategory,
-    id: Option<Uuid>,
-    display_name: Option<String>,
-}
-
-impl IngredientBuilder {
-    pub fn id(mut self, id: Uuid) -> Self {
-        self.id = Some(id);
-        self
-    }
-
-    pub fn display_name(mut self, display_name: &str) -> Self {
-        self.display_name = Some(String::from(display_name));
-        self
-    }
-
-    pub fn build(self) -> Ingredient {
-        let id = self.id.unwrap_or_else(Uuid::now_v7);
-
-        let display_name = match self.display_name {
-            None => self.name.clone(),
-            Some(d_name) => d_name,
-        };
-
-        Ingredient {
-            id,
-            name: self.name,
-            display_name,
-            measure_category: self.measure_category,
-        }
-    }
-}
-
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
 
     #[test]
     fn builder_generates_uuid_if_missing() {
-        let ingredient =
-            Ingredient::builder(String::from("Garlic"), MeasurementCategory::Subjective).build();
+        let ingredient = Ingredient::builder()
+            .name("Garlic")
+            .measure_category(MeasurementCategory::Subjective)
+            .build();
 
         assert!(!ingredient.id().is_nil())
+    }
+
+    #[test]
+    fn builder_defaults_display_name_to_name() {
+        let ingredient = Ingredient::builder()
+            .name("Garlic")
+            .measure_category(MeasurementCategory::Subjective)
+            .build();
+
+        assert_eq!(ingredient.display_name, ingredient.name)
+    }
+
+    #[test]
+    fn builder_respects_explicit_overrides() {
+        let ingredient = Ingredient::builder()
+            .name("Garlic")
+            .display_name("Garlic Display")
+            .measure_category(MeasurementCategory::Weight)
+            .id(Uuid::from_str("7569daf0-7828-4689-8338-9268fbf98d00").unwrap())
+            .build();
+
+        assert_eq!(ingredient.display_name, "Garlic Display");
+        assert_eq!(
+            ingredient.id,
+            Uuid::from_str("7569daf0-7828-4689-8338-9268fbf98d00").unwrap()
+        )
     }
 }

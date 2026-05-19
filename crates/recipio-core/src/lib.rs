@@ -1,6 +1,7 @@
 mod ingredient;
-mod recipes;
+mod recipe;
 mod units;
+mod user;
 
 use snafu::prelude::*;
 

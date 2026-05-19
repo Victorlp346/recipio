@@ -58,11 +58,10 @@ mod tests {
     #[tokio::test]
     async fn should_store_and_retrieve_ingredient() {
         let repo = InMemoryRepo::new();
-        let ingredient = Ingredient::builder(
-            String::from("Garlic"),
-            recipio_core::MeasurementCategory::Weight,
-        )
-        .build();
+        let ingredient = Ingredient::builder()
+            .name("Garlic")
+            .measure_category(recipio_core::MeasurementCategory::Weight)
+            .build();
 
         assert!(repo.store_ingredient(&ingredient).await.is_ok());
         let retrieved_ingredient = repo
