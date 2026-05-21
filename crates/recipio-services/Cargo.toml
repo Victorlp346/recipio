@@ -4,6 +4,9 @@ version.workspace = true
 edition.workspace = true
 
 [dependencies]
+recipio-core = { workspace = true }
+
+bcrypt = { workspace = true }
 
 [lints]
 workspace = true

@@ -8,14 +8,29 @@ edition = "2024"
 
 [workspace.dependencies]
 recipio-core = { path = "./crates/recipio-core" }
+recipio-repos = { path = "./crates/recipio-repos" }
+recipio-services = { path = "./crates/recipio-services" }
+
+argon2 = { version = "0.5", features = ["rand", "password-hash"] }
 async-trait = { version = "0.1" }
+axum = { version = "0.8", features = [] }
+bcrypt = { version = "0.19" }
 bon = { version = "3.9" }
 derive_more = { version = "2.1", features = ["full"] }
+nutype = { version = "0.7", features = ["serde", "regex"] }
+regex = { version = "1.12" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { version = "1.0", features = [] }
+serde_with = { version = "3.20" }
 snafu = { version = "0.9" }
 sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid"] }
 thiserror = { version = "2.0" }
+tracing = { version = "0.1" }
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tokio = { version = "1.52", features = ["full"] }
-uuid = { version = "1.23", features = ["v4", "v7"] }
+tower = { version = "0.5" }
+tower-http = { version = "0.6", features = ["trace"] }
+uuid = { version = "1.23", features = ["v4", "v7", "serde"] }
 
 [workspace.lints.rustdoc]
 all = { level = "warn" }

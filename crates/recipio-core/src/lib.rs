@@ -1,3 +1,4 @@
+mod error;
 mod ingredient;
 mod recipe;
 mod units;
@@ -6,13 +7,19 @@ mod user;
 use std::marker::PhantomData;
 use std::str::FromStr;
 
-use thiserror::Error;
+use serde::Serialize;
 use uuid::Uuid;
 
 pub use ingredient::{Ingredient, IngredientBuilder, IngredientRepository};
 pub use units::{MeasurementCategory, SubjectiveUnit, VolumeUnit, WeightUnit};
+pub use user::{
+    CreateUserDTO, Email, RetrieveUserDTO, UnhashedPassword, User, UserError, UserRepository,
+    Username,
+};
 
-#[derive(Debug, Clone)]
+pub use crate::error::{RecipioError, RecipioResult};
+
+#[derive(Debug, Clone, Serialize)]
 pub struct Id<T>(Uuid, PhantomData<T>);
 
 impl<T> Id<T> {
@@ -44,19 +51,3 @@ impl<T> FromStr for Id<T> {
         Ok(Self(id, PhantomData))
     }
 }
-
-#[derive(Debug, Error)]
-pub enum RecipioError {
-    #[error("repository error")]
-    Repo(#[from] RepoError),
-    #[error("impossible to parse {value:?} to {target:?}")]
-    ParsingError { value: String, target: String },
-}
-
-#[derive(Debug, Error)]
-pub enum RepoError {
-    #[error("Unknown repository error")]
-    UnknownError,
-}
-
-pub type RepoResult<T> = Result<T, RepoError>;
