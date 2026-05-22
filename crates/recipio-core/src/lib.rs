@@ -13,8 +13,8 @@ use uuid::Uuid;
 pub use ingredient::{Ingredient, IngredientBuilder, IngredientRepository};
 pub use units::{MeasurementCategory, SubjectiveUnit, VolumeUnit, WeightUnit};
 pub use user::{
-    CreateUserDTO, Email, RetrieveUserDTO, UnhashedPassword, User, UserError, UserRepository,
-    Username,
+    CreateUserDTO, Email, EmailError, RetrieveUserDTO, UnhashedPassword, UnhashedPasswordError,
+    User, UserError, UserRepository, Username, UsernameError,
 };
 
 pub use crate::error::{RecipioError, RecipioResult};

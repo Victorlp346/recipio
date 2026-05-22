@@ -15,7 +15,7 @@ pub enum RecipioError {
     #[error("password hashing error")]
     HashingError,
     #[error("unknown app error")]
-    Unkwon,
+    Unknown,
 }
 
 pub type RecipioResult<T> = Result<T, RecipioError>;

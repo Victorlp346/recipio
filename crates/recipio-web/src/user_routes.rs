@@ -2,6 +2,8 @@ use axum::{Json, Router, routing::post};
 use recipio_core::{CreateUserDTO, RecipioError};
 use serde::Deserialize;
 
+use crate::error::AppError;
+
 pub fn user_router() -> Router {
     Router::new().route("/", post(create_user))
 }
@@ -25,8 +27,8 @@ impl TryFrom<CreateUserRequest> for CreateUserDTO {
     }
 }
 
-async fn create_user(Json(payload): Json<CreateUserRequest>) -> String {
-    let create_user_data: CreateUserDTO = payload.try_into().unwrap();
+async fn create_user(Json(payload): Json<CreateUserRequest>) -> Result<String, AppError> {
+    let create_user_data: CreateUserDTO = payload.try_into()?;
     dbg!(create_user_data);
-    "Hello, World".to_string()
+    Ok("Hello, World".to_string())
 }
