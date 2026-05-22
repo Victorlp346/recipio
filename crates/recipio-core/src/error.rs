@@ -2,7 +2,7 @@ use std::fmt;
 
 use thiserror::Error;
 
-use crate::user::UserError;
+use crate::{session::SessionError, user::UserError};
 
 #[derive(Debug, Error)]
 pub enum RecipioError {
@@ -10,6 +10,8 @@ pub enum RecipioError {
     Repo(#[from] RepoError),
     #[error("user error")]
     User(#[from] UserError),
+    #[error("session error")]
+    Session(#[from] SessionError),
     #[error("impossible to parse {value:?} to {target:?}")]
     ParsingError { value: String, target: String },
     #[error("password hashing error")]

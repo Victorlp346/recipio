@@ -1,4 +1,4 @@
-use bon::{bon, builder};
+use bon::bon;
 use uuid::Uuid;
 
 use crate::units::MeasurementUnit;

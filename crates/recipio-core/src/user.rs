@@ -1,14 +1,23 @@
 use crate::{Id, RecipioError, error::RepoResult};
 use async_trait::async_trait;
 use nutype::nutype;
-use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use thiserror::Error;
 
 #[nutype(
     sanitize(trim, lowercase),
     validate(len_char_min = 4, not_empty, len_char_max = 255),
-    derive(Debug, Display, Clone, TryFrom, Into, FromStr, Serialize, Deserialize)
+    derive(
+        Debug,
+        Display,
+        Clone,
+        TryFrom,
+        Into,
+        FromStr,
+        Serialize,
+        Deserialize,
+        PartialEq
+    )
 )]
 pub struct Username(String);
 
@@ -19,7 +28,7 @@ pub struct Username(String);
 )]
 pub struct Email(String);
 
-#[nutype(sanitize(trim), derive(Clone, Into, FromStr, From))]
+#[nutype(sanitize(trim), derive(Clone, Into, FromStr, From, AsRef))]
 pub struct HashedPassword(String);
 
 impl Debug for HashedPassword {
@@ -59,35 +68,29 @@ impl User {
             password,
         }
     }
-}
 
-#[derive(Debug, Clone, Deserialize)]
-pub struct CreateUserDTO {
-    pub username: Username,
-    pub email: Email,
-    pub password: UnhashedPassword,
-}
+    pub fn id(&self) -> Id<User> {
+        self.id
+    }
 
-#[derive(Debug, Clone, Serialize)]
-pub struct RetrieveUserDTO {
-    pub id: Id<User>,
-    pub username: Username,
-    pub email: Email,
-}
+    pub fn username(&self) -> &Username {
+        &self.username
+    }
 
-impl From<User> for RetrieveUserDTO {
-    fn from(user: User) -> Self {
-        Self {
-            id: user.id,
-            username: user.username,
-            email: user.email,
-        }
+    pub fn email(&self) -> &Email {
+        &self.email
+    }
+
+    pub fn password(&self) -> &HashedPassword {
+        &self.password
     }
 }
 
 #[async_trait]
 pub trait UserRepository {
     async fn add(&self, user: User) -> RepoResult<User>;
+    async fn retrieve_by_id(&self, id: &Id<User>) -> RepoResult<Option<User>>;
+    async fn retrieve_by_username(&self, username: &Username) -> RepoResult<Option<User>>;
 }
 
 #[derive(Debug, Error)]

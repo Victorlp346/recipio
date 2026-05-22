@@ -1,7 +1,8 @@
 use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
-use recipio_core::{Ingredient, IngredientRepository, RecipioError};
+use recipio_core::RecipioError;
+use recipio_core::ingredient::{Ingredient, IngredientRepository};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 

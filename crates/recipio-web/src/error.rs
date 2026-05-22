@@ -3,7 +3,8 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use recipio_core::{EmailError, RecipioError, UnhashedPasswordError, UserError, UsernameError};
+use recipio_core::user::{EmailError, UnhashedPasswordError, UserError, UsernameError};
+use recipio_core::{RecipioError, session::SessionError};
 use serde_json::json;
 
 pub struct AppError(pub RecipioError);
@@ -18,10 +19,10 @@ impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message) = match &self.0 {
             RecipioError::User(user_error) => map_user_error(user_error),
-
+            RecipioError::Session(session_error) => map_session_error(session_error),
             RecipioError::ParsingError { value: _, target } => (
                 StatusCode::BAD_REQUEST,
-                format!("Invalid format: expected {}", target),
+                format!("Invalid format: expected {target}"),
             ),
 
             RecipioError::Repo(repo_err) => {
@@ -83,4 +84,17 @@ fn map_user_error(err: &UserError) -> (StatusCode, String) {
     };
 
     (StatusCode::BAD_REQUEST, msg.to_string())
+}
+
+fn map_session_error(err: &SessionError) -> (StatusCode, String) {
+    let (status_code, msg) = match err {
+        SessionError::IncorrectPassword => {
+            (StatusCode::FORBIDDEN, "username or password is incorrect")
+        }
+        SessionError::UserDoesNotExists => {
+            (StatusCode::FORBIDDEN, "username or password is incorrect")
+        }
+    };
+
+    (status_code, msg.to_string())
 }

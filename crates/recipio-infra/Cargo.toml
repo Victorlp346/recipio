@@ -1,0 +1,13 @@
+[package]
+name = "recipio-infra"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+recipio-core.workspace = true
+
+async-trait.workspace = true
+bcrypt.workspace = true
+
+[lints]
+workspace = true

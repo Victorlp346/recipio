@@ -5,6 +5,7 @@ edition.workspace = true
 
 [dependencies]
 recipio-core = { workspace = true }
+recipio-infra.workspace = true
 recipio-repos = { workspace = true }
 recipio-services = { workspace = true }
 

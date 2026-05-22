@@ -8,12 +8,13 @@ edition = "2024"
 
 [workspace.dependencies]
 recipio-core = { path = "./crates/recipio-core" }
+recipio-infra = { path = "./crates/recipio-infra" }
 recipio-repos = { path = "./crates/recipio-repos" }
 recipio-services = { path = "./crates/recipio-services" }
 
 argon2 = { version = "0.5", features = ["rand", "password-hash"] }
 async-trait = { version = "0.1" }
-axum = { version = "0.8", features = [] }
+axum = { version = "0.8", features = ["macros"] }
 bcrypt = { version = "0.19" }
 bon = { version = "3.9" }
 derive_more = { version = "2.1", features = ["full"] }
@@ -23,8 +24,9 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0", features = [] }
 serde_with = { version = "3.20" }
 snafu = { version = "0.9" }
-sqlx = { version = "0.8", features = ["runtime-tokio", "sqlite", "uuid"] }
+sqlx = { version = "0.9", features = ["runtime-tokio", "sqlite", "uuid"] }
 thiserror = { version = "2.0" }
+time = { version = "0.3", features = ["macros"] }
 tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 tokio = { version = "1.52", features = ["full"] }
@@ -43,5 +45,6 @@ complexity = { level = "warn", priority = -2 }
 perf = { level = "warn", priority = -2 }
 style = { level = "warn", priority = -2 }
 suspicious = { level = "warn", priority = -2 }
+#missing_docs_in_private_items = { level = "warn" }
 must_use_candidate = "allow"
 missing_const_for_fn = "allow"

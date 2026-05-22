@@ -13,6 +13,7 @@ serde = { workspace = true, features = ["derive"] }
 serde_with = { workspace = true, features = ["macros"] }
 snafu = { workspace = true }
 thiserror = { workspace = true }
+time = { workspace = true }
 uuid = { workspace = true, features = ["v4", "v7", "serde"] }
 
 [lints]
