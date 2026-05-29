@@ -1,4 +1,4 @@
-use axum::{Router, routing::get};
+use axum::{Router, middleware, routing::get};
 use recipio_infra::bcrypt_hasher::BcryptHasher;
 use recipio_repos::{SessionInMemoryRepo, UserInMemoryRepo};
 use recipio_services::{SessionService, UserService};
@@ -7,7 +7,9 @@ use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 use crate::{session_routes::session_routes, user_routes::user_router};
 
+mod auth;
 mod error;
+mod response;
 mod session_routes;
 mod user_routes;
 
@@ -41,9 +43,14 @@ async fn main() {
         .nest("/users", user_router(state.clone()))
         .nest("/sessions", session_routes(state.clone()))
         .route("/", get(|| async { "Hello, World!" }))
-        .layer(TraceLayer::new_for_http());
-
+        .layer(TraceLayer::new_for_http())
+        .layer(middleware::from_fn_with_state(
+            state.clone(),
+            auth::retrieve_session_middleware,
+        ));
     let listener = tokio::net::TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     axum::serve(listener, app).await.unwrap();
 }
+
+pub struct CreatedResponse<T>(T);

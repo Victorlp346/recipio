@@ -1,8 +1,7 @@
 use axum::{Json, Router, extract::State, routing::post};
-use recipio_core::{Id, session::Session};
-use recipio_services::LoginDto;
+use recipio_services::{LoginDto, SessionCreatedDTO};
 
-use crate::{AppState, error::AppError};
+use crate::{AppState, error::AppError, response::Created};
 
 pub fn session_routes(state: AppState) -> Router {
     Router::new()
@@ -14,6 +13,8 @@ pub fn session_routes(state: AppState) -> Router {
 async fn create_session(
     State(state): State<AppState>,
     Json(payload): Json<LoginDto>,
-) -> Result<Json<Id<Session>>, AppError> {
-    Ok(Json(state.session_service.create_session(payload).await?))
+) -> Result<Created<SessionCreatedDTO>, AppError> {
+    Ok(Created(
+        state.session_service.create_session(payload).await?,
+    ))
 }

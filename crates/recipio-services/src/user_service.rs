@@ -1,7 +1,6 @@
-use bcrypt::{DEFAULT_COST, hash};
 use recipio_core::hasher::PasswordHasher;
 use recipio_core::user::{Email, UnhashedPassword, User, UserRepository, Username};
-use recipio_core::{Id, RecipioError, RecipioResult};
+use recipio_core::{Id, RecipioResult};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]

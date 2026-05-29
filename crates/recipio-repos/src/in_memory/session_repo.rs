@@ -4,8 +4,7 @@ use async_trait::async_trait;
 use bon::bon;
 use recipio_core::{
     Id, RepoResult,
-    session::{self, Session, SessionRepository},
-    user,
+    session::{Session, SessionRepository},
 };
 use tokio::sync::RwLock;
 
@@ -33,5 +32,9 @@ impl SessionRepository for SessionInMemoryRepo {
             .insert(session.id(), session.clone());
         dbg!(self);
         Ok(session)
+    }
+
+    async fn retrieve_by_id(&self, id: &Id<Session>) -> RepoResult<Option<Session>> {
+        Ok(self.sessions.read().await.get(id).cloned())
     }
 }

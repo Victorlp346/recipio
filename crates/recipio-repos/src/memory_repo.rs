@@ -61,7 +61,7 @@ mod tests {
         let repo = InMemoryRepo::new();
         let ingredient = Ingredient::builder()
             .name("Garlic")
-            .measure_category(recipio_core::MeasurementCategory::Weight)
+            .measure_category(recipio_core::units::MeasurementCategory::Weight)
             .build();
 
         assert!(repo.store_ingredient(&ingredient).await.is_ok());

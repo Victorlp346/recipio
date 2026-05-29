@@ -3,13 +3,14 @@ use nutype::nutype;
 use thiserror::Error;
 use time::{Duration, OffsetDateTime};
 
-use crate::{Id, RepoResult, user::User};
+use crate::{Id, RecipioError, RepoResult, user::User};
 
 const DEFAULT_SESSION_DURATION_IN_DAYS: i64 = 7;
 
 #[derive(Debug, Clone)]
 pub struct Session {
     id: Id<Session>,
+    token: TokenHash,
     user_id: Id<User>,
     creation_date: CreationDate,
     expiration_date: ExpirationDate,
@@ -17,9 +18,10 @@ pub struct Session {
 }
 
 impl Session {
-    pub fn new(user_id: Id<User>) -> Self {
+    pub fn new(user_id: Id<User>, token: TokenHash) -> Self {
         Self {
             id: Id::new(),
+            token,
             user_id,
             creation_date: CreationDate::default(),
             expiration_date: ExpirationDate::default(),
@@ -29,6 +31,14 @@ impl Session {
 
     pub fn id(&self) -> Id<Session> {
         self.id
+    }
+
+    pub fn token(&self) -> &TokenHash {
+        &self.token
+    }
+
+    pub fn user_id(&self) -> Id<User> {
+        self.user_id
     }
 
     pub fn is_active(&self) -> bool {
@@ -54,9 +64,17 @@ pub struct CreationDate(OffsetDateTime);
 )]
 pub struct ExpirationDate(OffsetDateTime);
 
+#[nutype(
+    sanitize(trim),
+    validate(len_char_min = 64, len_char_max = 64),
+    derive(Debug, Clone, Into, TryFrom, AsRef, PartialEq, Eq)
+)]
+pub struct TokenHash(String);
+
 #[async_trait]
 pub trait SessionRepository {
     async fn add(&self, session: Session) -> RepoResult<Session>;
+    async fn retrieve_by_id(&self, id: &Id<Session>) -> RepoResult<Option<Session>>;
 }
 
 #[derive(Debug, Error)]
@@ -65,4 +83,14 @@ pub enum SessionError {
     UserDoesNotExists,
     #[error("password provided is incorrect")]
     IncorrectPassword,
+    #[error("token hash is invalid")]
+    InvalidTokenHash(#[from] TokenHashError),
+    #[error("invalid session token")]
+    InvalidSession,
+}
+
+impl From<TokenHashError> for RecipioError {
+    fn from(err: TokenHashError) -> Self {
+        RecipioError::Session(SessionError::InvalidTokenHash(err))
+    }
 }

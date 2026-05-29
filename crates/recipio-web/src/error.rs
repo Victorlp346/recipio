@@ -94,6 +94,14 @@ fn map_session_error(err: &SessionError) -> (StatusCode, String) {
         SessionError::UserDoesNotExists => {
             (StatusCode::FORBIDDEN, "username or password is incorrect")
         }
+        SessionError::InvalidTokenHash(_err) => (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            "an internal error ocurred",
+        ),
+        SessionError::InvalidSession => (
+            StatusCode::UNAUTHORIZED,
+            "there was a problem while authenticating the session",
+        ),
     };
 
     (status_code, msg.to_string())

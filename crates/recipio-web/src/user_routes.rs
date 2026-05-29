@@ -1,7 +1,7 @@
 use axum::{Json, Router, extract::State, routing::post};
 use recipio_services::{RegisterUserDto, UserResponseDto};
 
-use crate::{AppState, error::AppError};
+use crate::{AppState, error::AppError, response::Created};
 
 /// Creates the router in charge of handling user level requests
 pub fn user_router(state: AppState) -> Router {
@@ -14,7 +14,7 @@ pub fn user_router(state: AppState) -> Router {
 async fn create_user(
     State(state): State<AppState>,
     Json(payload): Json<RegisterUserDto>,
-) -> Result<Json<UserResponseDto>, AppError> {
+) -> Result<Created<UserResponseDto>, AppError> {
     let user = state.users_service.register(payload).await?;
-    Ok(Json(user))
+    Ok(Created(user))
 }

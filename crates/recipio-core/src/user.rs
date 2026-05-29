@@ -1,11 +1,12 @@
 use crate::{Id, RecipioError, error::RepoResult};
 use async_trait::async_trait;
 use nutype::nutype;
+use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use thiserror::Error;
 
 #[nutype(
-    sanitize(trim, lowercase),
+    sanitize(trim),
     validate(len_char_min = 4, not_empty, len_char_max = 255),
     derive(
         Debug,
@@ -51,12 +52,20 @@ impl Debug for UnhashedPassword {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Deserialize, Default)]
+pub enum Role {
+    #[default]
+    RegularUser,
+    Admin,
+}
+
 #[derive(Debug, Clone)]
 pub struct User {
     id: Id<User>,
     username: Username,
     email: Email,
     password: HashedPassword,
+    role: Role,
 }
 
 impl User {
@@ -66,6 +75,7 @@ impl User {
             username,
             email,
             password,
+            role: Role::default(),
         }
     }
 
