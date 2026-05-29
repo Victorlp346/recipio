@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use recipio_core::hasher::PasswordHasher;
 use recipio_core::user::{Email, UnhashedPassword, User, UserRepository, Username};
 use recipio_core::{Id, RecipioResult};
@@ -27,18 +29,17 @@ impl From<User> for UserResponseDto {
     }
 }
 
+pub type DynUserRepository = Arc<dyn UserRepository + Send + Sync>;
+pub type DynPasswordHasher = Arc<dyn PasswordHasher + Send + Sync>;
+
 #[derive(Clone)]
-pub struct UserService<R, H> {
-    repo: R,
-    password_hasher: H,
+pub struct UserService {
+    repo: DynUserRepository,
+    password_hasher: DynPasswordHasher,
 }
 
-impl<R, H> UserService<R, H>
-where
-    R: UserRepository + Send + Sync,
-    H: PasswordHasher + Send + Sync,
-{
-    pub fn new(repo: R, password_hasher: H) -> Self {
+impl UserService {
+    pub fn new(repo: DynUserRepository, password_hasher: DynPasswordHasher) -> Self {
         Self {
             repo,
             password_hasher,

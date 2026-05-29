@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use axum::{Router, middleware, routing::get};
 use recipio_infra::bcrypt_hasher::BcryptHasher;
 use recipio_repos::{SessionInMemoryRepo, UserInMemoryRepo};
@@ -17,8 +19,8 @@ mod user_routes;
 #[derive(Clone)]
 struct AppState {
     /// Service focused on User operations
-    users_service: UserService<UserInMemoryRepo, BcryptHasher>,
-    session_service: SessionService<UserInMemoryRepo, SessionInMemoryRepo, BcryptHasher>,
+    users_service: UserService,
+    session_service: SessionService,
 }
 
 #[tokio::main]
@@ -31,9 +33,9 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let user_repo = UserInMemoryRepo::builder().build();
-    let session_repo = SessionInMemoryRepo::builder().build();
-    let password_hasher = BcryptHasher;
+    let user_repo = Arc::new(UserInMemoryRepo::builder().build());
+    let session_repo = Arc::new(SessionInMemoryRepo::builder().build());
+    let password_hasher = Arc::new(BcryptHasher);
     let state = AppState {
         users_service: UserService::new(user_repo.clone(), password_hasher.clone()),
         session_service: SessionService::new(user_repo, session_repo, password_hasher),

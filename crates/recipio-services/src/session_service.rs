@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use rand::distr::{Alphanumeric, SampleString};
 use recipio_core::hasher::PasswordHasher;
 use recipio_core::session::{Session, SessionError, SessionRepository, TokenHash};
@@ -6,20 +8,23 @@ use recipio_core::{Id, RecipioError, RecipioResult};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+pub type DynUserRepository = Arc<dyn UserRepository + Send + Sync>;
+pub type DynSessionRepository = Arc<dyn SessionRepository + Send + Sync>;
+pub type DynPasswordHasher = Arc<dyn PasswordHasher + Send + Sync>;
+
 #[derive(Clone)]
-pub struct SessionService<UR, SR, H> {
-    user_repo: UR,
-    session_repo: SR,
-    password_hasher: H,
+pub struct SessionService {
+    user_repo: DynUserRepository,
+    session_repo: DynSessionRepository,
+    password_hasher: DynPasswordHasher,
 }
 
-impl<UR, SR, H> SessionService<UR, SR, H>
-where
-    UR: UserRepository + Send + Sync,
-    SR: SessionRepository + Send + Sync,
-    H: PasswordHasher + Send + Sync,
-{
-    pub fn new(user_repo: UR, session_repo: SR, password_hasher: H) -> Self {
+impl SessionService {
+    pub fn new(
+        user_repo: DynUserRepository,
+        session_repo: DynSessionRepository,
+        password_hasher: DynPasswordHasher,
+    ) -> Self {
         Self {
             user_repo,
             session_repo,
