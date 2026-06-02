@@ -1398,6 +1398,7 @@ dependencies = [
 name = "recipio-web"
 version = "0.1.0"
 dependencies = [
+ "async-trait",
  "axum",
  "recipio-core",
  "recipio-infra",

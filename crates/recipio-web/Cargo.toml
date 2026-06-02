@@ -9,6 +9,7 @@ recipio-infra.workspace = true
 recipio-repos = { workspace = true }
 recipio-services = { workspace = true }
 
+async-trait.workspace = true
 axum = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }

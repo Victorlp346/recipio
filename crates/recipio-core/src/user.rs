@@ -94,6 +94,10 @@ impl User {
     pub fn password(&self) -> &HashedPassword {
         &self.password
     }
+
+    pub fn role(&self) -> &Role {
+        &self.role
+    }
 }
 
 #[async_trait]

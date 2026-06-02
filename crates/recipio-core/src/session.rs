@@ -37,8 +37,8 @@ impl Session {
         &self.token
     }
 
-    pub fn user_id(&self) -> Id<User> {
-        self.user_id
+    pub fn user_id(&self) -> &Id<User> {
+        &self.user_id
     }
 
     pub fn is_active(&self) -> bool {

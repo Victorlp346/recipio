@@ -1,12 +1,16 @@
 use std::str::FromStr;
 
 use axum::{
-    extract::{Request, State},
-    http::{HeaderMap, header::AUTHORIZATION},
+    extract::{FromRequestParts, Request, State},
+    http::{HeaderMap, StatusCode, header::AUTHORIZATION, request::Parts},
     middleware::Next,
     response::Response,
 };
-use recipio_core::{Id, RecipioError, session::Session};
+use recipio_core::{
+    Id, RecipioError,
+    session::Session,
+    user::{Role, User},
+};
 
 use crate::{AppState, error::AppError};
 
@@ -42,10 +46,81 @@ pub async fn retrieve_session_middleware(
             .await
             .map_err(|_| INVALID_SESSION_ERROR)?;
 
-        dbg!(session.clone());
+        let Some(user) = state.users_service.get_by_id(session.user_id()).await? else {
+            return Err(INVALID_SESSION_ERROR);
+        };
+
         request.extensions_mut().insert(session);
+        request.extensions_mut().insert(user);
     }
 
     let response = next.run(request).await;
     Ok(response)
+}
+
+pub struct MaybeAuthenticated(pub Option<User>);
+
+impl<S> FromRequestParts<S> for MaybeAuthenticated
+where
+    S: Send + Sync,
+{
+    type Rejection = (StatusCode, &'static str);
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        Ok(Self(parts.extensions.get::<User>().cloned()))
+    }
+}
+
+pub struct AuthedUser(pub User);
+
+impl<S> FromRequestParts<S> for AuthedUser
+where
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let Some(user) = parts.extensions.get::<User>().cloned() else {
+            return Err(AppError(RecipioError::Unauthorized));
+        };
+
+        Ok(AuthedUser(user))
+    }
+}
+
+pub struct AdminUser(pub User);
+
+impl<S> FromRequestParts<S> for AdminUser
+where
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        let Some(user) = parts.extensions.get::<User>().cloned() else {
+            return Err(AppError(RecipioError::Unauthorized));
+        };
+
+        if !(*user.role() >= Role::Admin) {
+            return Err(AppError(RecipioError::Unauthorized));
+        }
+
+        Ok(Self(user))
+    }
+}
+
+pub struct GuestUser;
+
+impl<S> FromRequestParts<S> for GuestUser
+where
+    S: Send + Sync,
+{
+    type Rejection = AppError;
+
+    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
+        if let Some(_user) = parts.extensions.get::<User>() {
+            return Err(AppError(RecipioError::AlreadyAuthenticated));
+        }
+        Ok(Self)
+    }
 }

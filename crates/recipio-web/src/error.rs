@@ -18,6 +18,11 @@ impl From<RecipioError> for AppError {
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message) = match &self.0 {
+            RecipioError::Unauthorized => (StatusCode::UNAUTHORIZED, "not authorized".to_string()),
+            RecipioError::AlreadyAuthenticated => (
+                StatusCode::BAD_REQUEST,
+                "user is already authenticated".to_string(),
+            ),
             RecipioError::User(user_error) => map_user_error(user_error),
             RecipioError::Session(session_error) => map_session_error(session_error),
             RecipioError::ParsingError { value: _, target } => (

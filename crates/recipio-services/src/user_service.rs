@@ -60,4 +60,8 @@ impl UserService {
 
         Ok(UserResponseDto::from(user))
     }
+
+    pub async fn get_by_id(&self, id: &Id<User>) -> RecipioResult<Option<User>> {
+        Ok(self.repo.retrieve_by_id(id).await?)
+    }
 }

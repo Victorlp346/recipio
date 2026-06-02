@@ -16,6 +16,10 @@ pub enum RecipioError {
     ParsingError { value: String, target: String },
     #[error("password hashing error")]
     HashingError,
+    #[error("user is not authorized to perform this action")]
+    Unauthorized,
+    #[error("user is already logged in")]
+    AlreadyAuthenticated,
     #[error("unknown app error")]
     Unknown,
 }
