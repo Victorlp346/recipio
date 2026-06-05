@@ -8,6 +8,10 @@ recipio-core.workspace = true
 
 async-trait.workspace = true
 bcrypt.workspace = true
+bon = { workspace = true }
+sqlx = { workspace = true, features = ["runtime-tokio", "sqlite", "uuid"] }
+tokio = { workspace = true, features = ["full"] }
+uuid = { workspace = true }
 
 [lints]
 workspace = true

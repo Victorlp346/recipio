@@ -1366,14 +1366,6 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "bcrypt",
- "recipio-core",
-]
-
-[[package]]
-name = "recipio-repos"
-version = "0.1.0"
-dependencies = [
- "async-trait",
  "bon",
  "recipio-core",
  "sqlx",
@@ -1402,7 +1394,6 @@ dependencies = [
  "axum",
  "recipio-core",
  "recipio-infra",
- "recipio-repos",
  "recipio-services",
  "serde",
  "serde_json",

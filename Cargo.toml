@@ -9,7 +9,6 @@ edition = "2024"
 [workspace.dependencies]
 recipio-core = { path = "./crates/recipio-core" }
 recipio-infra = { path = "./crates/recipio-infra" }
-recipio-repos = { path = "./crates/recipio-repos" }
 recipio-services = { path = "./crates/recipio-services" }
 
 derive-where = { version = "1.6", features = ["serde"] }

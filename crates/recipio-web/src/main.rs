@@ -1,8 +1,10 @@
 use std::sync::Arc;
 
 use axum::{Router, middleware, routing::get};
-use recipio_infra::bcrypt_hasher::BcryptHasher;
-use recipio_repos::{SessionInMemoryRepo, UserInMemoryRepo};
+use recipio_infra::crypto::bcrypt_hasher::BcryptHasher;
+use recipio_infra::database::identity::{
+    in_memory_session_repo::SessionInMemoryRepo, in_memory_user_repo::UserInMemoryRepo,
+};
 use recipio_services::{SessionService, UserService};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
