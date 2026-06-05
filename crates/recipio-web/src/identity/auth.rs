@@ -12,8 +12,9 @@ use recipio_core::{
     identity::session::Session,
     identity::user::{Role, User},
 };
+use recipio_services::{SessionService, UserService};
 
-use crate::{AppState, error::AppError};
+use crate::error::AppError;
 
 const INVALID_SESSION_ERROR: AppError = AppError(RecipioError::Session(
     recipio_core::identity::session::SessionError::InvalidSession,
@@ -21,7 +22,8 @@ const INVALID_SESSION_ERROR: AppError = AppError(RecipioError::Session(
 
 pub async fn retrieve_session_middleware(
     headers: HeaderMap,
-    State(state): State<AppState>,
+    State(users_service): State<UserService>,
+    State(session_service): State<SessionService>,
     mut request: Request,
     next: Next,
 ) -> Result<Response, AppError> {
@@ -41,17 +43,12 @@ pub async fn retrieve_session_middleware(
             .map_err(|_| INVALID_SESSION_ERROR)?
             .into();
 
-        let session = state
-            .session_service
+        let session = session_service
             .validate_session(&session_id, parts[1])
             .await
             .map_err(|_| INVALID_SESSION_ERROR)?;
 
-        let Some(claims) = state
-            .users_service
-            .get_claims_by_id(session.user_id())
-            .await?
-        else {
+        let Some(claims) = users_service.get_claims_by_id(session.user_id()).await? else {
             return Err(INVALID_SESSION_ERROR);
         };
 

@@ -1,6 +1,6 @@
 use axum::{Json, Router, extract::State, routing::post};
 use recipio_core::identity::user::{UnhashedPassword, Username};
-use recipio_services::SessionCreatedDTO;
+use recipio_services::{SessionCreatedDTO, SessionService};
 use serde::Deserialize;
 
 use crate::{AppState, error::AppError, response::Created};
@@ -19,16 +19,13 @@ pub fn session_routes(state: AppState) -> Router {
 
 #[axum::debug_handler]
 async fn create_session(
-    State(state): State<AppState>,
+    State(session_service): State<SessionService>,
     Json(payload): Json<LoginRequest>,
 ) -> Result<Created<SessionCreatedDTO>, AppError> {
     let username: Username = payload.username.try_into()?;
     let password: UnhashedPassword = payload.password.try_into()?;
 
     Ok(Created(
-        state
-            .session_service
-            .create_session(username, password)
-            .await?,
+        session_service.create_session(username, password).await?,
     ))
 }

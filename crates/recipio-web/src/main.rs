@@ -1,11 +1,4 @@
-use std::sync::Arc;
-
 use axum::{Router, middleware, routing::get};
-use recipio_infra::crypto::bcrypt_hasher::BcryptHasher;
-use recipio_infra::database::identity::{
-    in_memory_session_repo::SessionInMemoryRepo, in_memory_user_repo::UserInMemoryRepo,
-};
-use recipio_services::{SessionService, UserService};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -14,14 +7,9 @@ use crate::identity::{session_routes::session_routes, user_routes::user_router};
 mod error;
 mod identity;
 mod response;
+mod state;
 
-/// State of the web layer for Recipio
-#[derive(Clone)]
-struct AppState {
-    /// Service focused on User operations
-    users_service: UserService,
-    session_service: SessionService,
-}
+pub use state::AppState;
 
 #[tokio::main]
 async fn main() {
@@ -33,13 +21,7 @@ async fn main() {
         .with(tracing_subscriber::fmt::layer())
         .init();
 
-    let user_repo = Arc::new(UserInMemoryRepo::builder().build());
-    let session_repo = Arc::new(SessionInMemoryRepo::builder().build());
-    let password_hasher = Arc::new(BcryptHasher);
-    let state = AppState {
-        users_service: UserService::new(user_repo.clone(), password_hasher.clone()),
-        session_service: SessionService::new(user_repo, session_repo, password_hasher),
-    };
+    let state = AppState::default();
 
     let app = Router::new()
         .nest("/users", user_router(state.clone()))

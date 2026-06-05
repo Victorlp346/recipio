@@ -7,7 +7,7 @@ use recipio_core::{
     Id,
     identity::user::{Email, UnhashedPassword, User, Username},
 };
-use recipio_services::UserResponseDto;
+use recipio_services::{UserResponseDto, UserService};
 use serde::Deserialize;
 
 use crate::{
@@ -34,7 +34,7 @@ pub fn user_router(state: AppState) -> Router {
 
 /// Handles an HTTP request for creating a new user.
 async fn create_user(
-    State(state): State<AppState>,
+    State(users_service): State<UserService>,
     _guest: GuestUser,
     Json(payload): Json<RegisterUserRequest>,
 ) -> Result<Created<UserResponseDto>, AppError> {
@@ -42,18 +42,15 @@ async fn create_user(
     let email: Email = payload.email.try_into()?;
     let password: UnhashedPassword = payload.password.try_into()?;
 
-    let user = state
-        .users_service
-        .register(username, email, password)
-        .await?;
+    let user = users_service.register(username, email, password).await?;
     Ok(Created(user))
 }
 
 async fn get_user(
-    State(state): State<AppState>,
+    State(users_service): State<UserService>,
     Path(user_id): Path<Id<User>>,
     AuthedUser(requester): AuthedUser,
 ) -> Result<Success<Option<UserResponseDto>>, AppError> {
-    let user = state.users_service.get_by_id(&user_id, &requester).await?;
+    let user = users_service.get_by_id(&user_id, &requester).await?;
     Ok(Success(user))
 }
