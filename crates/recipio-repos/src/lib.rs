@@ -1,4 +1,5 @@
-mod in_memory;
-mod memory_repo;
+pub mod catalog;
+pub mod identity;
 
-pub use in_memory::{SessionInMemoryRepo, UserInMemoryRepo};
+pub use identity::in_memory_session_repo::SessionInMemoryRepo;
+pub use identity::in_memory_user_repo::UserInMemoryRepo;

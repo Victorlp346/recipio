@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use bon::bon;
-use recipio_core::user::{User, UserRepository, Username};
+use recipio_core::identity::user::{User, UserRepository, Username};
 use recipio_core::{Id, RepoResult};
 use tokio::sync::RwLock;
 

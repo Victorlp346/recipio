@@ -1,9 +1,9 @@
 use std::sync::Arc;
 
 use rand::distr::{Alphanumeric, SampleString};
-use recipio_core::hasher::PasswordHasher;
-use recipio_core::session::{Session, SessionError, SessionRepository, TokenHash};
-use recipio_core::user::{UnhashedPassword, UserRepository, Username};
+use recipio_core::identity::hasher::PasswordHasher;
+use recipio_core::identity::session::{Session, SessionError, SessionRepository, TokenHash};
+use recipio_core::identity::user::{UnhashedPassword, UserRepository, Username};
 use recipio_core::{Id, RecipioError, RecipioResult};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};

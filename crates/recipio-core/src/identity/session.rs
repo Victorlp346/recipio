@@ -3,7 +3,7 @@ use nutype::nutype;
 use thiserror::Error;
 use time::{Duration, OffsetDateTime};
 
-use crate::{Id, RecipioError, RepoResult, user::User};
+use crate::{Id, RecipioError, RepoResult, identity::user::User};
 
 const DEFAULT_SESSION_DURATION_IN_DAYS: i64 = 7;
 

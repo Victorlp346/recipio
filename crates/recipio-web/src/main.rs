@@ -7,13 +7,11 @@ use recipio_services::{SessionService, UserService};
 use tower_http::trace::TraceLayer;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::{session_routes::session_routes, user_routes::user_router};
+use crate::identity::{session_routes::session_routes, user_routes::user_router};
 
-mod auth;
 mod error;
+mod identity;
 mod response;
-mod session_routes;
-mod user_routes;
 
 /// State of the web layer for Recipio
 #[derive(Clone)]
@@ -48,7 +46,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http())
         .layer(middleware::from_fn_with_state(
             state.clone(),
-            auth::retrieve_session_middleware,
+            identity::auth::retrieve_session_middleware,
         ));
     let listener = tokio::net::TcpListener::bind("[::]:3000").await.unwrap();
 

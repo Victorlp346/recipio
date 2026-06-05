@@ -1,7 +1,7 @@
 use bon::bon;
 use uuid::Uuid;
 
-use crate::units::MeasurementUnit;
+use crate::catalog::units::MeasurementUnit;
 
 pub struct Recipe {
     id: Uuid,

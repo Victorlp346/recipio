@@ -4,7 +4,7 @@ use async_trait::async_trait;
 use bon::bon;
 use recipio_core::{
     Id, RepoResult,
-    session::{Session, SessionRepository},
+    identity::session::{Session, SessionRepository},
 };
 use tokio::sync::RwLock;
 

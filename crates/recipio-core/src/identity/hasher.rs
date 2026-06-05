@@ -2,7 +2,7 @@ use async_trait::async_trait;
 
 use crate::{
     RecipioResult,
-    user::{HashedPassword, UnhashedPassword},
+    identity::user::{HashedPassword, UnhashedPassword},
 };
 
 #[async_trait]

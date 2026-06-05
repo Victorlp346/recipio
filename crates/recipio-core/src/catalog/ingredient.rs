@@ -1,4 +1,4 @@
-use crate::{RecipioError, units::MeasurementCategory};
+use crate::{RecipioError, catalog::units::MeasurementCategory};
 
 use async_trait::async_trait;
 use bon::bon;

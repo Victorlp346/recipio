@@ -3,13 +3,13 @@ use axum::{
     extract::{Path, State},
     routing::{get, post},
 };
-use recipio_core::{Id, user::User};
+use recipio_core::{Id, identity::user::User};
 use recipio_services::{RegisterUserDto, UserResponseDto};
 
 use crate::{
     AppState,
-    auth::{AuthedUser, GuestUser},
     error::AppError,
+    identity::auth::{AuthedUser, GuestUser},
     response::{Created, Success},
 };
 

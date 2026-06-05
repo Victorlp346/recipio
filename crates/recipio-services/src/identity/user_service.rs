@@ -1,8 +1,8 @@
 use std::sync::Arc;
 
-use recipio_core::auth::UserClaims;
-use recipio_core::hasher::PasswordHasher;
-use recipio_core::user::{Email, Role, UnhashedPassword, User, UserRepository, Username};
+use recipio_core::identity::auth::UserClaims;
+use recipio_core::identity::hasher::PasswordHasher;
+use recipio_core::identity::user::{Email, Role, UnhashedPassword, User, UserRepository, Username};
 use recipio_core::{Id, RecipioError, RecipioResult};
 use serde::{Deserialize, Serialize};
 

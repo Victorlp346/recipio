@@ -2,7 +2,7 @@ use std::{collections::HashMap, sync::Arc};
 
 use async_trait::async_trait;
 use recipio_core::RecipioError;
-use recipio_core::ingredient::{Ingredient, IngredientRepository};
+use recipio_core::catalog::ingredient::{Ingredient, IngredientRepository};
 use tokio::sync::RwLock;
 use uuid::Uuid;
 
@@ -61,7 +61,7 @@ mod tests {
         let repo = InMemoryRepo::new();
         let ingredient = Ingredient::builder()
             .name("Garlic")
-            .measure_category(recipio_core::units::MeasurementCategory::Weight)
+            .measure_category(recipio_core::catalog::units::MeasurementCategory::Weight)
             .build();
 
         assert!(repo.store_ingredient(&ingredient).await.is_ok());

@@ -1,6 +1,6 @@
 use crate::{
     Id,
-    user::{Role, User},
+    identity::user::{Role, User},
 };
 
 #[derive(Clone, Debug)]

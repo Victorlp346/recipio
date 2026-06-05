@@ -1,5 +1,4 @@
-mod session_service;
-mod user_service;
+pub mod identity;
 
-pub use session_service::{LoginDto, SessionCreatedDTO, SessionService};
-pub use user_service::{RegisterUserDto, UserResponseDto, UserService};
+pub use identity::session_service::{LoginDto, SessionCreatedDTO, SessionService};
+pub use identity::user_service::{RegisterUserDto, UserResponseDto, UserService};

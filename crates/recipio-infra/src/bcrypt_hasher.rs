@@ -1,7 +1,7 @@
 use async_trait::async_trait;
 use bcrypt;
-use recipio_core::hasher::PasswordHasher;
-use recipio_core::user::{HashedPassword, UnhashedPassword};
+use recipio_core::identity::hasher::PasswordHasher;
+use recipio_core::identity::user::{HashedPassword, UnhashedPassword};
 use recipio_core::{RecipioError, RecipioResult};
 
 #[derive(Clone)]

@@ -2,7 +2,7 @@ use std::fmt;
 
 use thiserror::Error;
 
-use crate::{session::SessionError, user::UserError};
+use crate::identity::{session::SessionError, user::UserError};
 
 #[derive(Debug, Error)]
 pub enum RecipioError {

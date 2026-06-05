@@ -3,8 +3,8 @@ use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
 };
-use recipio_core::user::{EmailError, UnhashedPasswordError, UserError, UsernameError};
-use recipio_core::{RecipioError, session::SessionError};
+use recipio_core::identity::user::{EmailError, UnhashedPasswordError, UserError, UsernameError};
+use recipio_core::{RecipioError, identity::session::SessionError};
 use serde_json::json;
 
 pub struct AppError(pub RecipioError);

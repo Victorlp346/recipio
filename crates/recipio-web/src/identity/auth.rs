@@ -8,15 +8,15 @@ use axum::{
 };
 use recipio_core::{
     Id, RecipioError,
-    auth::UserClaims,
-    session::Session,
-    user::{Role, User},
+    identity::auth::UserClaims,
+    identity::session::Session,
+    identity::user::{Role, User},
 };
 
 use crate::{AppState, error::AppError};
 
 const INVALID_SESSION_ERROR: AppError = AppError(RecipioError::Session(
-    recipio_core::session::SessionError::InvalidSession,
+    recipio_core::identity::session::SessionError::InvalidSession,
 ));
 
 pub async fn retrieve_session_middleware(
