@@ -15,3 +15,14 @@ where
         (StatusCode::CREATED, Json(self.0)).into_response()
     }
 }
+
+pub struct Success<T>(pub T);
+
+impl<T> IntoResponse for Success<T>
+where
+    T: Serialize,
+{
+    fn into_response(self) -> Response {
+        (StatusCode::OK, Json(self.0)).into_response()
+    }
+}

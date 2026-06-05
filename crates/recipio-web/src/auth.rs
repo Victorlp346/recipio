@@ -8,6 +8,7 @@ use axum::{
 };
 use recipio_core::{
     Id, RecipioError,
+    auth::UserClaims,
     session::Session,
     user::{Role, User},
 };
@@ -46,19 +47,23 @@ pub async fn retrieve_session_middleware(
             .await
             .map_err(|_| INVALID_SESSION_ERROR)?;
 
-        let Some(user) = state.users_service.get_by_id(session.user_id()).await? else {
+        let Some(claims) = state
+            .users_service
+            .get_claims_by_id(session.user_id())
+            .await?
+        else {
             return Err(INVALID_SESSION_ERROR);
         };
 
         request.extensions_mut().insert(session);
-        request.extensions_mut().insert(user);
+        request.extensions_mut().insert(claims);
     }
 
     let response = next.run(request).await;
     Ok(response)
 }
 
-pub struct MaybeAuthenticated(pub Option<User>);
+pub struct MaybeAuthenticated(pub Option<UserClaims>);
 
 impl<S> FromRequestParts<S> for MaybeAuthenticated
 where
@@ -67,11 +72,11 @@ where
     type Rejection = (StatusCode, &'static str);
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        Ok(Self(parts.extensions.get::<User>().cloned()))
+        Ok(Self(parts.extensions.get::<UserClaims>().cloned()))
     }
 }
 
-pub struct AuthedUser(pub User);
+pub struct AuthedUser(pub UserClaims);
 
 impl<S> FromRequestParts<S> for AuthedUser
 where
@@ -80,15 +85,15 @@ where
     type Rejection = AppError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let Some(user) = parts.extensions.get::<User>().cloned() else {
+        let Some(user_claims) = parts.extensions.get::<UserClaims>().cloned() else {
             return Err(AppError(RecipioError::Unauthorized));
         };
 
-        Ok(AuthedUser(user))
+        Ok(AuthedUser(user_claims))
     }
 }
 
-pub struct AdminUser(pub User);
+pub struct AdminUser(pub UserClaims);
 
 impl<S> FromRequestParts<S> for AdminUser
 where
@@ -97,15 +102,15 @@ where
     type Rejection = AppError;
 
     async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let Some(user) = parts.extensions.get::<User>().cloned() else {
+        let Some(user_claims) = parts.extensions.get::<UserClaims>().cloned() else {
             return Err(AppError(RecipioError::Unauthorized));
         };
 
-        if !(*user.role() >= Role::Admin) {
+        if !(*user_claims.role() >= Role::Admin) {
             return Err(AppError(RecipioError::Unauthorized));
         }
 
-        Ok(Self(user))
+        Ok(Self(user_claims))
     }
 }
 

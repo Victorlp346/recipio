@@ -1,8 +1,9 @@
 use std::sync::Arc;
 
+use recipio_core::auth::UserClaims;
 use recipio_core::hasher::PasswordHasher;
-use recipio_core::user::{Email, UnhashedPassword, User, UserRepository, Username};
-use recipio_core::{Id, RecipioResult};
+use recipio_core::user::{Email, Role, UnhashedPassword, User, UserRepository, Username};
+use recipio_core::{Id, RecipioError, RecipioResult};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Deserialize)]
@@ -61,7 +62,24 @@ impl UserService {
         Ok(UserResponseDto::from(user))
     }
 
-    pub async fn get_by_id(&self, id: &Id<User>) -> RecipioResult<Option<User>> {
-        Ok(self.repo.retrieve_by_id(id).await?)
+    pub async fn get_claims_by_id(&self, id: &Id<User>) -> RecipioResult<Option<UserClaims>> {
+        Ok(self.repo.retrieve_by_id(id).await?.map(Into::into))
+    }
+
+    pub async fn get_by_id(
+        &self,
+        id: &Id<User>,
+        requester: &UserClaims,
+    ) -> RecipioResult<Option<UserResponseDto>> {
+        if requester.id() != id {
+            if *requester.role() < Role::Admin {
+                return Err(RecipioError::Unauthorized);
+            }
+        }
+        Ok(self
+            .repo
+            .retrieve_by_id(id)
+            .await?
+            .map(UserResponseDto::from))
     }
 }
