@@ -15,6 +15,24 @@ impl From<RecipioError> for AppError {
     }
 }
 
+impl From<UsernameError> for AppError {
+    fn from(err: UsernameError) -> Self {
+        AppError(err.into())
+    }
+}
+
+impl From<EmailError> for AppError {
+    fn from(err: EmailError) -> Self {
+        AppError(err.into())
+    }
+}
+
+impl From<UnhashedPasswordError> for AppError {
+    fn from(err: UnhashedPasswordError) -> Self {
+        AppError(err.into())
+    }
+}
+
 impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message) = match &self.0 {

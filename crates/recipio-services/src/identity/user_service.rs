@@ -4,14 +4,7 @@ use recipio_core::identity::auth::UserClaims;
 use recipio_core::identity::hasher::PasswordHasher;
 use recipio_core::identity::user::{Email, Role, UnhashedPassword, User, UserRepository, Username};
 use recipio_core::{Id, RecipioError, RecipioResult};
-use serde::{Deserialize, Serialize};
-
-#[derive(Debug, Clone, Deserialize)]
-pub struct RegisterUserDto {
-    pub username: String,
-    pub email: String,
-    pub password: String,
-}
+use serde::Serialize;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct UserResponseDto {
@@ -47,11 +40,12 @@ impl UserService {
         }
     }
 
-    pub async fn register(&self, data: RegisterUserDto) -> RecipioResult<UserResponseDto> {
-        let username: Username = data.username.try_into()?;
-        let email: Email = data.email.try_into()?;
-        let unhashed_password: UnhashedPassword = data.password.try_into()?;
-
+    pub async fn register(
+        &self,
+        username: Username,
+        email: Email,
+        unhashed_password: UnhashedPassword,
+    ) -> RecipioResult<UserResponseDto> {
         let new_id: Id<User> = Id::new();
 
         let hashed_password = self.password_hasher.hash(&unhashed_password).await?;

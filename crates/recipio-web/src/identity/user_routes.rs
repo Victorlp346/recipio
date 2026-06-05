@@ -3,8 +3,12 @@ use axum::{
     extract::{Path, State},
     routing::{get, post},
 };
-use recipio_core::{Id, identity::user::User};
-use recipio_services::{RegisterUserDto, UserResponseDto};
+use recipio_core::{
+    Id,
+    identity::user::{Email, UnhashedPassword, User, Username},
+};
+use recipio_services::UserResponseDto;
+use serde::Deserialize;
 
 use crate::{
     AppState,
@@ -12,6 +16,13 @@ use crate::{
     identity::auth::{AuthedUser, GuestUser},
     response::{Created, Success},
 };
+
+#[derive(Deserialize)]
+pub struct RegisterUserRequest {
+    pub username: String,
+    pub email: String,
+    pub password: String,
+}
 
 /// Creates the router in charge of handling user level requests
 pub fn user_router(state: AppState) -> Router {
@@ -25,9 +36,16 @@ pub fn user_router(state: AppState) -> Router {
 async fn create_user(
     State(state): State<AppState>,
     _guest: GuestUser,
-    Json(payload): Json<RegisterUserDto>,
+    Json(payload): Json<RegisterUserRequest>,
 ) -> Result<Created<UserResponseDto>, AppError> {
-    let user = state.users_service.register(payload).await?;
+    let username: Username = payload.username.try_into()?;
+    let email: Email = payload.email.try_into()?;
+    let password: UnhashedPassword = payload.password.try_into()?;
+
+    let user = state
+        .users_service
+        .register(username, email, password)
+        .await?;
     Ok(Created(user))
 }
 

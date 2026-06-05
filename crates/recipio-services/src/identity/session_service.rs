@@ -5,7 +5,7 @@ use recipio_core::identity::hasher::PasswordHasher;
 use recipio_core::identity::session::{Session, SessionError, SessionRepository, TokenHash};
 use recipio_core::identity::user::{UnhashedPassword, UserRepository, Username};
 use recipio_core::{Id, RecipioError, RecipioResult};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sha2::{Digest, Sha256};
 
 pub type DynUserRepository = Arc<dyn UserRepository + Send + Sync>;
@@ -32,10 +32,11 @@ impl SessionService {
         }
     }
 
-    pub async fn create_session(&self, data: LoginDto) -> RecipioResult<SessionCreatedDTO> {
-        let username: Username = data.username.try_into()?;
-        let unhashed_password: UnhashedPassword = data.password.try_into()?;
-
+    pub async fn create_session(
+        &self,
+        username: Username,
+        unhashed_password: UnhashedPassword,
+    ) -> RecipioResult<SessionCreatedDTO> {
         let Some(user) = self.user_repo.retrieve_by_username(&username).await? else {
             let dummy_hash = "$2b$12$somevalidlookingdummyhashstringhere............."
                 .try_into()
@@ -86,12 +87,6 @@ impl SessionService {
         }
         Err(RecipioError::Session(SessionError::InvalidSession))
     }
-}
-
-#[derive(Debug, Deserialize)]
-pub struct LoginDto {
-    pub username: String,
-    pub password: String,
 }
 
 #[derive(Debug, Serialize)]
